@@ -30,3 +30,6 @@
 *.exe
 *.out
 *.app
+/Bin
+/Ejercicio1/.vs
+/Ejercicio1/Ejercicio1/x64
