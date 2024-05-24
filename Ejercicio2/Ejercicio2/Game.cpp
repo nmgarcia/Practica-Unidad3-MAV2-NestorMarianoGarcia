@@ -59,14 +59,19 @@ void Game::DrawGame()
 	wnd->draw(rightWallShape);
 
 	
-	controlBodyAvatar->Actualizar(); // Actualiza la posición del avatar
-	controlBodyAvatar->Dibujar(*wnd); // Dibuja el avatar en la ventana
+	pelota1->Actualizar(); // Actualiza la posición del avatar
+	pelota1->Dibujar(*wnd); // Dibuja el avatar en la ventana
+
+	pelota2->Actualizar(); 
+	pelota2->Dibujar(*wnd);
 
 }
 
 void Game::DoEvents()
 {
 	Event evt;
+	mousePosition = wnd->mapPixelToCoords(sf::Mouse::getPosition(*wnd));
+	
 	while(wnd->pollEvent(evt))
 	{
 		switch(evt.type)
@@ -74,7 +79,31 @@ void Game::DoEvents()
 			case Event::Closed:
 				wnd->close();
 				break;
+			case Event::MouseButtonPressed:
+				
+				pelota1->SetIsDragging(mousePosition);
+				pelota2->SetIsDragging(mousePosition);
+				break;
+			case sf::Event::MouseButtonReleased:
+				pelota1->SetIsDragging(false);
+				pelota2->SetIsDragging(false);				
+				break;
 		}
+	}
+	
+	if (mousePosition.x > 125 || mousePosition.x < 5 || mousePosition.y < 5 || mousePosition.y > 95) {
+		pelota1->SetIsDragging(false);
+		pelota2->SetIsDragging(false);
+	}
+
+	if (pelota1->GetIsDragging()) {
+		pelota1->SetAwake(true);
+		pelota1->SetPosition(b2Vec2(mousePosition.x, mousePosition.y));
+	}
+
+	if (pelota2->GetIsDragging()) {
+		pelota2->SetAwake(true);
+		pelota2->SetPosition(b2Vec2(mousePosition.x, mousePosition.y));
 	}
 }
 
@@ -120,15 +149,21 @@ void Game::InitPhysics()
 	b2Body* rightWallBody = Box2DHelper::CreateRectangularStaticBody(phyWorld, 10, 100);
 	rightWallBody->SetTransform(b2Vec2(100.0f, 50.0f), 0.0f);
 
-	pelotaBody= Box2DHelper::CreateCircularDynamicBody(phyWorld, 5, 1.0f, 0.5, 0.5f);
-	pelotaBody->SetTransform(b2Vec2(50.0f, 10.0f), 0.0f);
-	pelotaBody->SetLinearVelocity(b2Vec2(75.0f, -25.0f));//Agregamos una velocidad para hacer la simulacion un poco mas interesante
+	pelotaBody1= Box2DHelper::CreateCircularDynamicBody(phyWorld, 5, 1.0f, 0.5, 0.5f);
+	pelotaBody1->SetTransform(b2Vec2(40.0f, 20.0f), 0.0f);
+	
+	pelotaBody2 = Box2DHelper::CreateCircularDynamicBody(phyWorld, 5, 1.0f, 0.5, 0.5f);
+	pelotaBody2->SetTransform(b2Vec2(60.0f, 20.0f), 0.0f);	
+	
+	Box2DHelper::CreateDistanceJoint(phyWorld, pelotaBody1, b2Vec2(40, 20), pelotaBody2,b2Vec2(60, 20), 1.0f, 0.5f, 0.5f);
 
 	// Carga la textura de la pelota para el avatar
 	texturaPelota.loadFromFile("Pelota.png");
 
 	// Inicializa el avatar del jugador con el cuerpo físico creado y la textura de la pelota
-	controlBodyAvatar = new Avatar(pelotaBody, new sf::Sprite(texturaPelota));
+	pelota1 = new Avatar(pelotaBody1, new sf::Sprite(texturaPelota));	
+	pelota2 = new Avatar(pelotaBody2, new sf::Sprite(texturaPelota));
+
 }
 
 Game::~Game(void)
