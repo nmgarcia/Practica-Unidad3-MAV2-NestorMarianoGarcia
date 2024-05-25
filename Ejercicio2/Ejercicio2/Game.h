@@ -27,10 +27,9 @@ private:
 	b2Body* pelotaBody2;
 	Avatar* pelota1;
 	Avatar* pelota2;
-
-	bool drag[2] = { false,false }; // bandera para activar/desactivar arrastre de las dos pelotas
-	Vector2f mousePosition;  // posición del cursor del mouse
-
+	
+	Vector2f mousePosition;
+	
 	sf::Texture texturaPelota;
 
 public:

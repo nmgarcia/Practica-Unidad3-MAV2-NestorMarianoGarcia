@@ -22,13 +22,10 @@ private:
 	float frameTime;
 	int fps;
 
-	// Cuerpo de box2d
-	b2Body* pelotaBody;
-	b2Body* cajaBody;
-	Avatar* pelota;
+	// Cuerpo de box2d	
+	b2Body* cajaBody;	
 	Avatar* caja;
-
-	sf::Texture texturaPelota;
+	
 	sf::Texture texturaCaja;
 
 public:
